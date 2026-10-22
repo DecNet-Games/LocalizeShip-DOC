@@ -19,6 +19,8 @@ Guided Setup is a deliberately small wizard. It discovers which provider adapter
 
 ![Provider discovery]({{ site.baseurl }}/assets/images/15-existing-provider.png)
 
+*The capture shows the optional I2 Localization and Dialogue System adapters absent; it is not licensed-install verification.*
+
 ---
 
 ## Step 1 — Provider discovery

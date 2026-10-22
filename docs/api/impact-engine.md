@@ -18,7 +18,7 @@ The service reads one stable entry and emits `ChangedSource`, `StaleTranslation`
 
 `ComputeImpact` throws `ArgumentNullException` for a null workspace. It returns a report even when the entry has no current source revision.
 
-> [!TIP]
+{: .tip }
 > Recompute after `RevisionTracker` processes a source edit. The engine reports current workspace state; it does not mutate or cache it.
 
 The engine does not evaluate voice duration, provider assets or review states other than missing and stale.

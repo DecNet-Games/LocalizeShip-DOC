@@ -17,6 +17,8 @@ LocalizeShip reads and writes strings through a small adapter interface. The bun
 
 ![Existing provider architecture]({{ site.baseurl }}/assets/images/15-existing-provider.png)
 
+*The capture shows the optional I2 Localization and Dialogue System adapters absent; it is not licensed-install verification.*
+
 ---
 
 ## The contract

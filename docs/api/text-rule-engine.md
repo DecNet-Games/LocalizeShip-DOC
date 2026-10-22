@@ -21,5 +21,5 @@ List<TextRuleViolation> issues = engine.ValidatePlaceholders(
 
 `GeneratePseudoText` accents characters, pads to an expansion factor and can reverse the result with bidi override marks. That option is a layout stress helper, not shaping or language validation.
 
-> [!TIP]
+{: .tip }
 > Run the text rules before approval and before your release gate. `ReleaseGateEvaluator` does not invoke this service.

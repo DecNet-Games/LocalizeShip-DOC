@@ -12,9 +12,11 @@ permalink: /docs/installation/
 ### Asset Store import, dependencies, and first compile
 {: .fs-6 .text-grey-dk-000 }
 
-LocalizeShip is a **commercial Unity Asset Store package**. It is not distributed for free on GitHub, and there is no public UPM registry endpoint for it. The GitHub repository you may have found is documentation and issue tracking only.
+LocalizeShip **version 1.0.0** is a **$129 commercial Unity Asset Store package**. It is purchased only through the Unity Asset Store. It is not distributed for free on GitHub, and there is no public UPM registry endpoint for it. The GitHub repository you may have found is documentation and issue tracking only.
 
 ![LocalizeShip runs on top of an existing provider]({{ site.baseurl }}/assets/images/15-existing-provider.png)
+
+*The capture shows the optional I2 Localization and Dialogue System adapters absent; it is not licensed-install verification.*
 
 ---
 
@@ -30,7 +32,7 @@ LocalizeShip is a **commercial Unity Asset Store package**. It is not distribute
 | **Pixel Crushers Dialogue System** | Optional, your licence | Compile-isolated adapter only |
 
 {: .warning }
-> Only Unity **6000.5.4f1** is claimed as verified. Other Unity 6 patch versions will usually work, but LocalizeShip does not claim a test matrix it has not run. Do not promise “2022.3 LTS supported” on the basis of this documentation.
+> Only Unity **6000.5.4f1** is claimed as verified. LocalizeShip does not claim a test matrix for other Unity versions.
 
 ---
 

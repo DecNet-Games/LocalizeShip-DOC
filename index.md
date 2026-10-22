@@ -119,6 +119,8 @@ Four deterministic checks — approval matrix, visual matrix, voice coverage and
 
 ![LocalizeShip on top of an existing provider]({{ site.baseurl }}/assets/images/15-existing-provider.png)
 
+*The capture shows the optional I2 Localization and Dialogue System adapters absent; it is not licensed-install verification.*
+
 | Provider | How it connects | Verification status |
 |---|---|---|
 | **Unity Localization** `1.5.13` | Implemented editor adapter over `StringTableCollection`; key-based identity | Primary path; the adapter is implemented, but no shipped window calls it for import or write-back |

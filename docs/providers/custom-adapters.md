@@ -17,6 +17,8 @@ If your strings live in JSON, XML, a database or an in-house editor, you can imp
 
 ![Provider architecture]({{ site.baseurl }}/assets/images/15-existing-provider.png)
 
+*The capture shows the optional I2 Localization and Dialogue System adapters absent; it is not licensed-install verification.*
+
 ---
 
 ## The interface, again

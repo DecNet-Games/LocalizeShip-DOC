@@ -21,7 +21,7 @@ List<VisualFinding> findings = engine.EvaluateElement(
 
 Suppression uses an exact finding fingerprint. The engine marks a matched finding suppressed and copies the reason; it does not delete the finding.
 
-> [!WARNING]
+{: .warning }
 > Supply rectangles in compatible coordinate spaces. The engine compares them as received and performs no canvas-to-screen conversion.
 
 This is deterministic geometry and glyph analysis. It does not inspect screenshot pixels or verify a player build.

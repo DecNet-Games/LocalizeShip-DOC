@@ -19,6 +19,8 @@ Verified against **Unity Localization 1.5.13**.
 
 ![Provider architecture]({{ site.baseurl }}/assets/images/15-existing-provider.png)
 
+*The capture shows the optional I2 Localization and Dialogue System adapters absent; it is not licensed-install verification.*
+
 ---
 
 ## Requirements

@@ -13,7 +13,7 @@ permalink: /docs/features/documentation-viewer/
 ### Keep the operating manual beside the release workspace
 {: .fs-6 .text-grey-dk-000 }
 
-The Documentation Viewer is the seventh LocalizeShip editor window. Open it from `Tools > Decnet > LocalizeShip > Documentation` when you need the package manual without switching away from Unity.
+The Documentation Viewer is the seventh menu-opened LocalizeShip window (Release Gates opens from the Studio header instead). Open it from `Tools > Decnet > LocalizeShip > Documentation` when you need the package manual without switching away from Unity.
 
 ## What problem it solves
 
@@ -31,7 +31,7 @@ Release work crosses setup, provider integration, review, handoff, capture, gate
 
 The package contains ten offline manuals under `Assets/Decnet/LocalizeShip/Documentation`. The viewer presents those package resources; it is not a web browser and does not fetch remote documentation.
 
-> [!TIP]
+{: .tip }
 > Use the in-Editor viewer for the immediate task, then archive the generated JSON or HTML release report with your release evidence. Reading documentation does not change workspace state.
 
 ## Honest limits

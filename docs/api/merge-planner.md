@@ -21,5 +21,5 @@ The planner compares base, current and incoming values. Rows are classified in o
 
 `ApplyCoordinator.ApplyPlan` refuses unresolved conflicts, journals backups, writes accepted text and moves imported changes to `NeedsReview`. `Rollback` detects later edits unless `force` is true.
 
-> [!WARNING]
+{: .warning }
 > The journal is an in-memory model unless your caller persists it. Applying a plan does not itself call `SetDirty` or save assets.

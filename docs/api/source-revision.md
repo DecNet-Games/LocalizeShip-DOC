@@ -23,7 +23,7 @@ var revision = new SourceRevision(
 
 The constructor stores raw and normalized text, speaker, context, normalization version and UTC ticks. It hashes `Version|NormalizedText|Speaker:ContextDescription` with SHA-256 and stores the first eight bytes as 16 lowercase hexadecimal characters. `ExtractPlaceholders()` collects unique brace-delimited tokens.
 
-> [!WARNING]
+{: .warning }
 > `SceneOrFixture` is not set by the constructor. Set it directly or use `RevisionTracker.ProcessSourceEntry(..., fixture)` when visual impact should follow a fixture.
 
 Hash equality is revision equality; it is not a linguistic judgment. For invalidation behaviour, see [Revision Graph]({{ site.baseurl }}/docs/concepts/revision-graph/).
