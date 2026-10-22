@@ -3,77 +3,214 @@ layout: default
 title: Advisory Drafts
 parent: Features
 nav_order: 13
-description: "Optional Bring-Your-Own-Endpoint model assistance with strict schema validation that never auto-approves."
+description: "The advisory validation contract: parse an external suggestion, bind it to an entry, and reject anything that breaks placeholders."
 permalink: /docs/features/advisory-drafts/
 ---
 
 # Advisory Drafts
 {: .fs-9 }
 
-### Optional Machine Assistance with Human-in-the-Loop Safeguards
+### Suggestions are input, not output
 {: .fs-6 .text-grey-dk-000 }
 
----
+LocalizeShip defines a small, strict contract for machine suggestions. It does not call a model, does not ship an HTTP client, and never approves anything. It takes a JSON payload, checks that it belongs to the right entry, validates its placeholders, and returns a proposal you can inspect.
 
-Many localization tools tout automated "One-Click AI Translation" buttons. In actual game development, blind machine translation without review is disastrous: it introduces hallucinated placeholders, breaks lore terminology, and leads to player ridicule.
-
-LocalizeShip supports an optional **Advisory Drafts Engine** (`AdvisoryProvider.cs`), but enforces strict architectural safeguards.
+![Release board]({{ site.baseurl }}/assets/images/02-release-board.png)
 
 ---
 
-## Uncompromising Human-in-the-Loop Guarantees
+## What ships
 
+| Component | Purpose |
+|---|---|
+| `AdvisoryConfig` | Endpoint, model, timeout and retry defaults |
+| `AdvisoryProvider.ValidateSuggestion` | Parse and validate a raw JSON suggestion |
+| `DraftProposal` | Result object with validity and error |
+
+What does **not** ship:
+
+- an HTTP request implementation;
+- an API key field that is serialized;
+- a chat window or “Generate” button;
+- automatic approval or application of suggestions;
+- prompt templates, token counting or cost tracking.
+
+The endpoint and model are configuration **defaults**, not evidence of an integration. Nothing contacts them.
+
+---
+
+## Configuration
+
+```csharp
+[Serializable]
+public class AdvisoryConfig
+{
+    public string EndpointUrl = "https://api.openai.com/v1/chat/completions";
+    public string ModelName = "gpt-4o-mini";
+    public int TimeoutSeconds = 15;
+    public int MaxRetries = 2;
+    [NonSerialized] public string SessionApiKey;
+}
 ```
-                               ┌─────────────────────────────┐
-                               │ User Configured Endpoint    │
-                               │ (OpenAI-Compatible BYO API) │
-                               └──────────────┬──────────────┘
-                                              │ Returns Payload
-                                              ▼
-                               ┌─────────────────────────────┐
-                               │ Strict Schema Validation    │
-                               │ * Check JSON structure      │
-                               │ * Verify parsed.id == source│
-                               │ * Verify exact placeholders │
-                               └──────────────┬──────────────┘
-                                              │ Payload Valid
-                                              ▼
-                               ┌─────────────────────────────┐
-                               │ Ingested as [ DRAFT ]       │
-                               │ (Never sets [Approved])     │
-                               └──────────────┬──────────────┘
-                                              │
-                                              ▼
-                               ┌─────────────────────────────┐
-                               │ Mandatory Human QA Review   │
-                               │ Language lead inspects &    │
-                               │ explicitly signs off.       │
-                               └─────────────────────────────┘
-```
 
-### 1. Never Auto-Approves
-Suggestions returned by the advisory provider are ingested with the review status **`Draft`**. They can never transition directly to `Approved`. A human reviewer must inspect the line in the Release Board and explicitly sign off.
+`SessionApiKey` is marked `[NonSerialized]`, so it is not written into the workspace asset or any serialized object. It lives only for the session.
 
-### 2. Strict Schema & ID Verification
-Machine learning models frequently hallucinate or drop formatting keys. `AdvisoryProvider` enforces strict validation:
-* **Entry ID Matching**: The returned JSON must contain an `id` that matches the request's `StableEntryId.Value`. If IDs mismatch or are omitted, the payload is completely discarded.
-* **Placeholder Parity**: The suggestion must retain all declared placeholders (e.g., `{player_name}`). If a placeholder was translated or omitted, the proposal is rejected.
+{: .warning }
+> Configuration is not a client. You must implement the network call yourself, and you are responsible for key handling, privacy, cost and provider terms.
 
-### 3. Bring-Your-Own-Endpoint (Zero Vendor Lock-In)
-LocalizeShip does not run a proprietary paid cloud server or force a subscription. You supply your own OpenAI-compatible endpoint (OpenAI, Azure, local Ollama, or custom proxy):
-* API keys are stored exclusively in local Editor user preferences (`EditorPrefs`).
-* API keys are **never serialized** into `ScriptableObject` assets, git repositories, or exported reports.
-
-### 4. Resilient Error Handling
-If an endpoint times out, cancels, or returns an HTTP 429 (Rate Limit):
-* No table mutations occur.
-* The system logs a descriptive diagnostic message and cleanly resumes offline operation.
+The defaults name an OpenAI-compatible chat completions endpoint. That is a convenience for integrations that already use that shape. It is not an endorsement, and the product works without any network access.
 
 ---
 
-## Acceptance Test Verification: `LS_T10`
+## The response contract
 
-Security and schema verification are tested under acceptance test **`LS_T10_AdvisoryFailure_RejectsMalformedPayloads`**:
-* Discarding malformed JSON payloads.
-* Rejecting mismatched entry IDs.
-* Preventing table mutation on network errors.
+The validator expects:
+
+```json
+{
+  "id": "dialogue.greeting.001",
+  "suggestion": "Hallo, Reisender!",
+  "rationale": "Matches the informal register used in the German UI."
+}
+```
+
+| Field | Required | Notes |
+|---|---|---|
+| `id` | Yes, effectively | Must equal `source.EntryId.Value` exactly |
+| `suggestion` | Yes | Must be non-empty |
+| `rationale` | No | Defaults to `"Advisory AI Draft Proposal"` |
+
+Parsing uses `UnityEngine.JsonUtility.FromJson<AdvisoryResponseSchema>`. Unknown fields are ignored.
+
+---
+
+## Validation pipeline
+
+```csharp
+var provider = new AdvisoryProvider(new AdvisoryConfig());
+DraftProposal proposal = provider.ValidateSuggestion(
+    sourceRevision,
+    rawJsonFromYourClient,
+    new LocaleId("de"));
+```
+
+Steps:
+
+1. **Empty payload** → invalid, `"Empty or null response payload received."`
+2. **Parse** → `JsonUtility` is lenient; missing `suggestion` → invalid, `"Malformed suggestion payload; missing 'suggestion' field."`
+3. **ID match** → missing or different ID → invalid, `"Response ID mismatch: expected '…', received '…'."`
+4. **Placeholder validation** → `TextRuleEngine.ValidatePlaceholders`; any `Error` or `Fatal` → invalid, `"Placeholder validation failed: …"`.
+5. **Success** → `IsValid = true`, text and rationale populated.
+
+Warnings (for example an unexpected placeholder) do **not** invalidate the proposal.
+
+### DraftProposal
+
+```csharp
+public class DraftProposal
+{
+    public StableEntryId EntryId;
+    public LocaleId TargetLocale;
+    public string SuggestedText;
+    public string Rationale;
+    public List<string> TerminologyUsed;
+    public bool IsValid;
+    public string ValidationError;
+}
+```
+
+`TerminologyUsed` is declared but not populated by `ValidateSuggestion`. If your integration wants to record which glossary terms were used, fill it yourself.
+
+---
+
+## Why the ID check matters
+
+A suggestion is only meaningful for one entry and one source revision. Without an ID check, a retry, a shuffled batch response or a prompt injection could place German text on a French line.
+
+The validator checks the ID. It does **not** check:
+
+- that the `SourceRevision` passed in is the current one;
+- that the target locale matches the entry;
+- that the suggestion respects glossary terms;
+- that the tone, length or register is appropriate;
+- that the response is free of prompt-injection content.
+
+Those are your responsibilities.
+
+---
+
+## Reference integration shape
+
+```csharp
+public DraftProposal RequestDraft(SourceRevision rev, LocaleId locale)
+{
+    var config = new AdvisoryConfig
+    {
+        SessionApiKey = Environment.GetEnvironmentVariable("LOCALIZESHIP_ADVISORY_KEY")
+    };
+
+    string prompt =
+        $"Translate entry '{rev.EntryId}' into {locale}.\n" +
+        $"Source: {rev.SourceText}\n" +
+        $"Return JSON: {{\"id\":\"{rev.EntryId}\",\"suggestion\":\"...\",\"rationale\":\"...\"}}";
+
+    string raw = MyHttpClient.PostJson(config, prompt); // your code
+    return new AdvisoryProvider(config).ValidateSuggestion(rev, raw, locale);
+}
+```
+
+Rules for the client you write:
+
+- read the key from the environment or a secret store, never from the asset;
+- send only the source text and context you are allowed to share;
+- set a timeout and a retry cap;
+- log the request ID, not the key or the full prompt;
+- treat the response as untrusted text;
+- never auto-approve.
+
+---
+
+## Human review is the point
+
+A `DraftProposal` with `IsValid = true` is mechanically sound. It is not reviewed. It has not been checked for meaning, register, cultural fit or legal constraints.
+
+Recommended flow:
+
+1. Request a draft.
+2. Validate it.
+3. Show it beside the source and the current translation.
+4. Let a human edit and approve.
+5. Record the approval event; `ApprovalEvent` does not currently record “source = advisory”, so note it in your process or in the rejection reason if discarded.
+
+---
+
+## Failure messages
+
+| Message | Cause |
+|---|---|
+| `Empty or null response payload received.` | Whitespace or null input |
+| `Malformed suggestion payload; missing 'suggestion' field.` | Not JSON, or missing/empty `suggestion` |
+| `Response ID mismatch: expected '…', received '…'.` | Wrong ID or missing ID |
+| `Placeholder validation failed: …` | Missing placeholder, unexpected brace, tag issue |
+| `Failed to parse advisory suggestion: …` | Exception during parsing |
+
+The validator never throws for bad input; it returns an invalid proposal.
+
+---
+
+## What to tell a reviewer
+
+- “Advisory” means optional assistance.
+- Nothing is sent anywhere by the package.
+- Nothing is approved automatically.
+- The only automatic check is ID binding plus placeholder validity.
+- A human remains the release gate for language quality.
+
+---
+
+## Related pages
+
+- [Text Rules]({{ site.baseurl }}/docs/features/text-rules/)
+- [Review States]({{ site.baseurl }}/docs/concepts/review-states/)
+- [Security & Privacy]({{ site.baseurl }}/docs/security-and-privacy/)
+- [Limitations]({{ site.baseurl }}/docs/limitations/)
