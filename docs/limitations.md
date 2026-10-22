@@ -1,47 +1,163 @@
 ---
 layout: default
-title: Limitations & Honesty Fence
+title: Limitations
 nav_order: 14
-description: "Explicit technical limitations, supported scopes, and honesty boundaries for LocalizeShip."
+description: "The honest boundary of LocalizeShip 1.0.0: what is a window, what is a library, what is a scaffold, and what is not shipped."
 permalink: /docs/limitations/
 ---
 
-# Limitations & Honesty Fence
+# Limitations
 {: .fs-9 }
 
-### Transparent Boundaries of What LocalizeShip Does and Does Not Do
+### Read this before you promise anything
 {: .fs-6 .text-grey-dk-000 }
 
----
-
-To maintain professional engineering standards, LocalizeShip explicitly documents its technical boundaries and non-goals. We believe in complete transparency rather than marketing exaggeration.
+LocalizeShip is a release-review layer with real domain logic. It is not a complete localization platform. This page lists the gaps that matter in production, without hedging.
 
 ---
 
-## What LocalizeShip Does NOT Do
+## Workflow gaps
 
-### 1. No Automated Linguistic RTL Correctness Certification
-While LocalizeShip provides bidirectional (Bidi) text expansion and stress fixtures to test layout clipping for right-to-left languages (such as Arabic and Hebrew), it **does not claim to certify linguistic or grammatical correctness**. 
-* The engine verifies that font glyphs exist and text fits within bounding boxes.
-* Cultural appropriateness, correct word shaping, and narrative nuance require human native-speaker review.
+### No source-import window
 
-### 2. No Player-Capture Guarantees Without Registered Fixtures
-LocalizeShip does not possess magic insight into runtime gameplay. It cannot automatically know how a dynamic inventory menu will look during deep gameplay unless you attach a `CaptureFixture` component to that UI prefab or scene.
-* Editor previews are explicitly labelled as **`Editor Approximation`**.
-* True player layout verification requires executing registered fixtures via the development player capture bridge.
+There is no menu item or window that imports strings from Unity Localization, I2, Dialogue System or a file. Guided Setup creates an empty workspace. You populate `SourceRevisions` with a script, using the adapter or your own reader.
 
-### 3. No Bundling of Third-Party Commercial Code
-LocalizeShip includes compile-isolated adapters for **I2 Localization** and **Pixel Crushers Dialogue System**. 
-* We do **not** bundle or redistribute proprietary third-party code.
-* The adapters are verified in our acceptance tests for **clean compilation and safe provider-absent fallback**. We do not claim CI verification against licensed proprietary installations.
+This is the largest practical gap in 1.0.0.
 
-### 4. No Unsupervised "One-Click AI Translation"
-LocalizeShip explicitly rejects fully automated, unsupervised machine translation into retail games. The optional Advisory Drafts engine strictly outputs strings as `Draft`. It can never transition a line directly to `Approved`. Human review is mandatory.
+### No provider write-back from the UI
+
+Applying an import writes to the workspace. It does not write to Unity Localization tables. The Unity adapter has a `WriteTranslation` method, but no window calls it. You must integrate that yourself.
+
+### No delete or rename workflow
+
+There is no supported way to delete a revision, rename a key while preserving history, or merge two identities. Removing entries requires editing the asset or writing a script, and history is lost with the record.
+
+### No persistent import journal
+
+The Review Imports window keeps the last journal in a static field. Closing the editor loses it. Rollback across sessions is not available. Use version control for durable rollback.
+
+### No release-diff window
+
+Comparing releases means diffing exported JSON reports or the workspace asset in Git. There is no side-by-side comparison UI.
 
 ---
 
-## Technical Performance Limits
+## Provider gaps
 
-* **String Table Size**: Tested up to 25,000 active string entries per workspace without UI degradation. For games exceeding 50,000 lines, we recommend partitioning your project into multiple workspaces (e.g., `Core_UI.asset`, `Dialogue_Act1.asset`).
-* **Supported Render Pipelines**: Universal Render Pipeline (URP), High Definition Render Pipeline (HDRP), and Built-in Render Pipeline.
-* **Supported UI Systems**: uGUI (Unity UI), TextMeshPro, and runtime UI Toolkit.
+| Provider | Reality |
+|---|---|
+| Unity Localization | Implemented for String Tables; uses the shared key, not the numeric ID; no asset tables, metadata, comments or Addressables awareness |
+| I2 Localization | Compile-isolated scaffold; no data access even with the symbol defined |
+| Dialogue System | Compile-isolated scaffold; no data access even with the symbol defined |
+
+The I2 and Dialogue System adapters are verified only for clean compilation and safe provider-absent behaviour. They are not licensed-install integrations.
+
+---
+
+## QA gaps
+
+### No player capture
+
+`CaptureRunner` runs in the editor against live scene objects. There is no player bridge, no device capture, no multi-frame settling. `isPlayerMode` only labels the tile.
+
+### Screenshots are placeholders
+
+The PNG written by `CaptureRunner` is a solid background colour. Findings come from RectTransform and font measurements, not from the image. Never present the PNG as rendered evidence.
+
+### Fixture-only coverage
+
+A screen with no `CaptureFixture` has no coverage. The matrix finds active fixtures in the open scene; it does not open other scenes or prefabs.
+
+### Gate blind spots
+
+The gate checks approval state, visual errors, stale voice and subtitle timing/CPS. It does not check:
+
+- placeholders or rich-text validity;
+- glossary violations;
+- merge conflicts;
+- missing or duration-mismatched voice;
+- subtitle min/max duration or line length;
+- stale subtitle source hashes;
+- warnings;
+- player rendering.
+
+### Geometry assumptions
+
+Safe-area checks compare rects that may be in different coordinate spaces (`Screen.safeArea` vs local RectTransform units). Results can be offset or spurious.
+
+### Failed tiles
+
+A capture tile marked `Failed` is not counted as unvisited and may have no findings, so it can effectively pass the visual check. Track failures separately.
+
+---
+
+## Text and language
+
+- Placeholder extraction is regex-based and does not parse nested ICU expressions.
+- Glossary checking only finds forbidden variants; it does not require approved terms.
+- The glossary has no UI and no gate enforcement; `BlockOnGlossaryViolations` is inert.
+- Pseudolocalization is a crude accent/padding/reversal helper, not a shaping or RTL test.
+- No linguistic, grammatical, cultural or RTL certification is claimed.
+- CPS uses UTF-16 length, not grapheme clusters.
+
+---
+
+## AI and automation
+
+- No HTTP client, prompt templates or model calls ship.
+- `AdvisoryProvider` validates a payload you already obtained.
+- No auto-approval path exists.
+- No CLI ships. CI requires a custom `-executeMethod` entry point and an activated Unity licence.
+- No background or scheduled jobs.
+
+---
+
+## Data and scale
+
+- All lookups are linear scans over lists.
+- No indexing, paging or virtualized matrix.
+- No performance claim beyond the sample and test workspaces.
+- The workspace asset grows with approval history; very large histories make the asset heavy and diffs noisy.
+- No built-in pruning or archiving of history.
+
+---
+
+## Platform support
+
+- Verified on Unity **6000.5.4f1** only.
+- Requires Unity Localization **1.5.13** (the adapters assembly hard-references it).
+- Addressables **1.25.0** is referenced; no direct feature depends on it.
+- No claim for Unity 2022.3, 2023, consoles or mobile player capture.
+
+---
+
+## Non-claims
+
+LocalizeShip does **not**:
+
+- certify a release as linguistically correct;
+- replace a translator, reviewer or LQA pass;
+- guarantee that an approved string renders correctly in a player;
+- redistribute I2 or Pixel Crushers code;
+- send your data anywhere;
+- decide policy for you when a check is non-blocking.
+
+---
+
+## How to work within the limits
+
+1. Write a source-ingestion script and keep it in your project.
+2. Call text rules before approving; do not rely on the gate for tags or placeholders.
+3. Re-run captures after layout-affecting edits; tiles do not invalidate by hash.
+4. Prefer JSON handoffs.
+5. Archive reports and workspace commits together.
+6. Decide explicitly which non-gated issues are release blockers.
+
+---
+
+## Related pages
+
+- [Coverage Honesty]({{ site.baseurl }}/docs/concepts/coverage-honesty/)
+- [Release Gates]({{ site.baseurl }}/docs/features/release-gates/)
+- [Testing & Verification]({{ site.baseurl }}/docs/testing-and-verification/)
+- [FAQ]({{ site.baseurl }}/docs/faq/)

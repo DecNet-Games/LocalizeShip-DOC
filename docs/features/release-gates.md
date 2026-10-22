@@ -216,9 +216,9 @@ If you need these as blockers, extend `ReleaseGateEvaluator` or run your own che
 
 ## CI reality
 
-There is no shipped headless gate CLI. The evaluator is a plain C# class in the editor assembly, and the report writer lives in the editor window. You can:
+There is no shipped headless gate CLI. The evaluator is a plain C# class in the editor assembly; `GenerateHtmlReport` and `GenerateJsonReport` are public methods on `ReleaseGateEvaluator`, not private window helpers. You can:
 
-- run the **12 EditMode acceptance tests** in batch mode with the included `run_tests.ps1` pattern;
+- run the **12 EditMode acceptance tests** in batch mode with your own `-runTests` invocation;
 - call `ReleaseGateEvaluator` from a custom editor script executed with `-executeMethod`;
 - archive the JSON/HTML produced by that script.
 

@@ -50,7 +50,7 @@ Minimum window sizes:
 |---|---|
 | **Release Gates & Reports** | Toolbar button **Release Gates** inside the Studio |
 | **Export Support Diagnostics** | Left filter panel of the Studio |
-| **Audit History** | Studio toolbar |
+| **Audit History** | Studio bottom bar |
 | **Navigate to Source in Scene/Table** | Line detail panel in the Studio |
 | **Batch Approve Visible** | Matrix header in the Studio |
 | **Capture Runner** | No menu; **Run Matrix Captures** inside Capture Matrix |
@@ -67,14 +67,16 @@ This list matters: several capabilities are libraries, not buttons.
 
 From left to right:
 
-- Workspace object field and **Create New Workspace**;
+- Workspace object field (drag a `ReleaseWorkspace` asset);
+- release version, source locale and target locales when a workspace is assigned;
 - **Guided Setup**;
 - **Handoff**;
 - **Review Imports**;
 - **Capture Matrix**;
 - **Voice & Subtitles**;
-- **Release Gates**;
-- **Audit History**.
+- **Release Gates**.
+
+**Audit History** is in the bottom bar, not the header. There is no **Create New Workspace** button; create one through Guided Setup.
 
 The empty state offers **Run Guided Setup (Recommended)** and **Open Ready-Made RPG Sample Release**.
 

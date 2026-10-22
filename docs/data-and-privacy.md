@@ -66,7 +66,7 @@ Many teams commit it deliberately for auditability. Decide with your legal and p
 | Gate reports | Project root (`LocalizeShip_Report_v*.html/.json`) |
 | Capture PNGs | `Assets/Decnet/LocalizeShip/Generated/Captures` |
 | Diagnostics | Project root, timestamped |
-| Letency journals | Memory only, lost on editor restart |
+| Import journals | Memory only, lost on editor restart |
 | Advisory API key | `[NonSerialized]` field — not persisted anywhere by the package |
 
 The generated capture folder lives under `Assets/`, so Unity imports the PNGs. Add it to `.gitignore` if you do not want placeholder images in version control.

@@ -1,48 +1,118 @@
 ---
 layout: default
-title: Frequently Asked Questions
+title: FAQ
 nav_order: 16
-description: "Frequently asked questions regarding licensing, workflows, engine compatibility, and architecture."
+description: "Direct answers about licensing, supported Unity versions, offline operation, CI, providers and what the gate actually checks."
 permalink: /docs/faq/
 ---
 
-# Frequently Asked Questions (FAQ)
+# Frequently Asked Questions
 {: .fs-9 }
 
-### Common Inquiries Regarding Architecture, Licensing & Workflows
+### Answers that match the shipped code
 {: .fs-6 .text-grey-dk-000 }
 
 ---
 
-### Q: Does LocalizeShip replace my existing localization or dialogue system?
-**No.** LocalizeShip is an **auditable release studio and visual QA layer** that sits on top of your existing localization tool. Your string data continues to reside in standard Unity Localization tables (`StringTableCollection`), I2 terms, or Dialogue System databases.
+### Does LocalizeShip replace Unity Localization, I2 or Dialogue System?
+
+No. It sits beside them. Strings stay in your provider; LocalizeShip stores revisions, approvals, QA findings and release evidence in a workspace asset.
+
+### Is it a subscription or a cloud service?
+
+No. It is a one-time paid Unity Asset Store package. There is no account, server, telemetry or mandatory network access.
+
+### Does anything leave my machine?
+
+No. The package has no HTTP client. Diagnostics are written locally. Handoff files leave only when you send them.
+
+### Does it need an AI service?
+
+No. The advisory module validates a JSON payload you supply. It does not call a model.
+
+### Which Unity version is supported?
+
+Verified on **Unity 6000.5.4f1** with Unity Localization **1.5.13** and Addressables **1.25.0**. No claim is made for 2022.3, 2023 or other 6.x patches. Run the 12-test suite on your version before relying on it.
+
+### How many tests pass?
+
+**12 of 12** EditMode acceptance tests. There are exactly 12 cases; any “13/13” figure is wrong.
+
+### How does it decide a translation is stale?
+
+It hashes the normalized source text, speaker, context and policy version with SHA-256 (first 8 bytes, 16 hex chars). An approval records that hash. When the source hash changes, `Approved` becomes `Stale`.
+
+### Does editing a comment or metadata stale translations?
+
+Only fields included in the hash: normalized text, speaker and context description. The Unity adapter imports empty speaker/context, so for provider-imported lines those do not affect the hash until you populate them.
+
+### Can I import my existing strings?
+
+Not through a window. There is no source-import UI in 1.0.0. Use `UnityLocalizationAdapter.ReadCollection` or write a reader for your format, then add revisions to the workspace. See [First Release]({{ site.baseurl }}/docs/workflows/first-release/).
+
+### Does approving a translation write it back to Unity tables?
+
+Not automatically. The Unity adapter has `WriteTranslation`, but no window calls it. Apply imports to the workspace, then write back with your own script if that is your pipeline.
+
+### Do the I2 and Dialogue System adapters work?
+
+They compile safely and report absence. They do not read or write data, even with their compile symbols defined. They are scaffolds, not integrations, and have not been tested against licensed installs.
+
+### Is there a CLI for CI?
+
+No. There is no `ReleaseGateCLI`. You can run the EditMode tests in batch mode and write a custom `-executeMethod` entry point that calls `ReleaseGateEvaluator`. See [CI Release Gates]({{ site.baseurl }}/docs/workflows/ci-release-gates/).
+
+### Does the gate check placeholders or glossary terms?
+
+No. It checks approval state, visual errors, stale voice and subtitle timing/CPS. `BlockOnGlossaryViolations` exists but is not read. Run `TextRuleEngine` yourself.
+
+### Does the gate check missing audio or duration mismatch?
+
+No. It only checks stale voice bindings. Missing and duration-mismatched takes are displayed in the Voice window but not gated.
+
+### Does the gate require every locale to be captured?
+
+It requires no `Unknown` or `Registered` tiles when `BlockOnUnvisitedCaptures` is true (the default). A `Failed` tile is not treated as unvisited, so track failures separately.
+
+### Are capture screenshots real?
+
+No. The PNG is a solid background colour. Findings come from live RectTransform and font measurements. There is no player capture.
+
+### Can I trust the safe-area findings?
+
+Treat them as heuristic. The engine compares screen-space safe area with local rect coordinates without conversion.
+
+### Does it support RTL or Arabic shaping?
+
+It can display RTL text and report missing glyphs. It does not shape, mirror layouts or certify linguistic correctness. The pseudolocalization helper reverses characters, which is not a shaping test.
+
+### Can it auto-translate and auto-approve?
+
+No. Advisory drafts are validated suggestions only. Nothing transitions to `Approved` without a human action.
+
+### Can I roll back an import after restarting Unity?
+
+No. The rollback journal is session-only. Use version control for durable rollback.
+
+### Is the workspace safe to commit?
+
+It contains every source string, translation and approval event. Commit it only if your repository access matches the confidentiality of the game text.
+
+### What does the diagnostics export contain?
+
+Unity version, OS, graphics API, workspace counts and provider status. No strings, IDs, paths or secrets. See [Support & Diagnostics]({{ site.baseurl }}/docs/support-diagnostics/).
+
+### Where do I buy it and where do I report issues?
+
+Asset Store: <https://assetstore.unity.com/packages/slug/421016>
+
+Issues: <https://github.com/DecNet-Games/LocalizeShip-DOC/issues>
 
 ---
 
-### Q: Does LocalizeShip require a monthly subscription or cloud account?
-**No.** LocalizeShip is a standard commercial Unity Asset purchased once from the [Unity Asset Store](https://assetstore.unity.com/packages/slug/421016). It runs 100% locally on your machine with zero cloud lock-in, zero telemetry, and zero mandatory external servers.
+## Related pages
 
----
-
-### Q: Does LocalizeShip require an internet connection or an AI service?
-**No.** LocalizeShip is fully functional completely offline. All revision tracking, impact analysis, 3-way merges, visual QA geometry measurements, and release gates execute entirely inside your local Unity Editor. The Advisory Drafts module is strictly optional.
-
----
-
-### Q: How does LocalizeShip know if a translation is stale?
-LocalizeShip normalizes the source text and calculates a cryptographic **SHA-256 hash** over the normalized text, context, and placeholders. When you approve a translation, the approval event permanently records that specific hash. If the source text is edited in Unity, the new hash will not match the approval record, automatically transitioning the translation to **`Stale`**.
-
----
-
-### Q: Can I run LocalizeShip release gates headlessly in CI/CD pipelines?
-**Yes.** LocalizeShip includes a command-line interface (`ReleaseGateCLI.EvaluateGates`) that can be executed via Unity's batchmode in GitHub Actions, GitLab CI, or Jenkins. It outputs standalone HTML reports, machine-readable JSON manifests, and standard process exit codes (0 for pass, 1 for fail).
-
----
-
-### Q: What versions of Unity are supported?
-LocalizeShip was developed and rigorously verified against **Unity 6000.5.4f1 LTS**. It is fully compatible with **Unity 2022.3 LTS**, **Unity 2023**, and all **Unity 6** releases.
-
----
-
-### Q: How does LocalizeShip protect against spreadsheet formula injection?
-When exporting CSV files for external translators, `HandoffCsvSerializer` automatically prepends a transport apostrophe (`'`) to any string that begins with formula trigger characters (`=`, `+`, `-`, `@`, `\t`, `\r`). When the translated CSV is re-imported, the parser cleanly strips the transport character, guaranteeing data integrity.
+- [Limitations]({{ site.baseurl }}/docs/limitations/)
+- [Testing & Verification]({{ site.baseurl }}/docs/testing-and-verification/)
+- [Getting Started]({{ site.baseurl }}/docs/getting-started/)
+- [Troubleshooting]({{ site.baseurl }}/docs/troubleshooting/)

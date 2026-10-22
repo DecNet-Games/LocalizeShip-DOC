@@ -121,7 +121,7 @@ Four deterministic checks — approval matrix, visual matrix, voice coverage and
 
 | Provider | How it connects | Verification status |
 |---|---|---|
-| **Unity Localization** `1.5.13` | Native editor adapter over `StringTableCollection` and `SharedTableData` | Primary path; part of the verified 12/12 acceptance run |
+| **Unity Localization** `1.5.13` | Implemented editor adapter over `StringTableCollection`; key-based identity | Primary path; the adapter is implemented, but no shipped window calls it for import or write-back |
 | **I2 Localization** | Compile-isolated module behind `LOCALIZESHIP_I2_SUPPORT` | Verified for clean compilation and provider-absent behaviour |
 | **Pixel Crushers Dialogue System** | Compile-isolated module behind `LOCALIZESHIP_PIXELCRUSHERS_SUPPORT` | Verified for clean compilation and provider-absent behaviour |
 
