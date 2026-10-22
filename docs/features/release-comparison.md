@@ -15,7 +15,7 @@ permalink: /docs/features/release-comparison/
 
 A gate report answers “is this release ready?” It does not answer “what got worse since 0.9?” LocalizeShip 1.0.0 has no dedicated comparison window. It gives you deterministic JSON reports, which are straightforward to diff.
 
-![Release gates report]({{ site.baseurl }}/assets/images/13-report-export.png)
+![Release gates report]({{ site.baseurl }}/assets/images/14-release-gates.png)
 
 ---
 

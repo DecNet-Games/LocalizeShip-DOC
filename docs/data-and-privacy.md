@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Data & Privacy Policy
-nav_order: 14
+nav_order: 17
 description: "Data retention, offline operation, and security architecture of LocalizeShip."
 permalink: /docs/data-and-privacy/
 ---

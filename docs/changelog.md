@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Changelog
-nav_order: 15
+nav_order: 18
 description: "Release history and version notes for LocalizeShip."
 permalink: /docs/changelog/
 ---

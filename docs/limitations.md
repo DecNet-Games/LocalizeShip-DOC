@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Limitations & Honesty Fence
-nav_order: 11
+nav_order: 14
 description: "Explicit technical limitations, supported scopes, and honesty boundaries for LocalizeShip."
 permalink: /docs/limitations/
 ---

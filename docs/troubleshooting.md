@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Troubleshooting
-nav_order: 12
+nav_order: 15
 description: "Common troubleshooting steps, compilation diagnosis, and support diagnostic exports."
 permalink: /docs/troubleshooting/
 ---

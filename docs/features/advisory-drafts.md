@@ -15,7 +15,7 @@ permalink: /docs/features/advisory-drafts/
 
 LocalizeShip defines a small, strict contract for machine suggestions. It does not call a model, does not ship an HTTP client, and never approves anything. It takes a JSON payload, checks that it belongs to the right entry, validates its placeholders, and returns a proposal you can inspect.
 
-![Release board]({{ site.baseurl }}/assets/images/02-release-board.png)
+![Release board]({{ site.baseurl }}/assets/images/03-release-board.png)
 
 ---
 
@@ -212,5 +212,5 @@ The validator never throws for bad input; it returns an invalid proposal.
 
 - [Text Rules]({{ site.baseurl }}/docs/features/text-rules/)
 - [Review States]({{ site.baseurl }}/docs/concepts/review-states/)
-- [Security & Privacy]({{ site.baseurl }}/docs/security-and-privacy/)
+- [Data & Privacy]({{ site.baseurl }}/docs/data-and-privacy/)
 - [Limitations]({{ site.baseurl }}/docs/limitations/)

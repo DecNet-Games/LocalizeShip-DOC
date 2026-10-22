@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Frequently Asked Questions
-nav_order: 13
+nav_order: 16
 description: "Frequently asked questions regarding licensing, workflows, engine compatibility, and architecture."
 permalink: /docs/faq/
 ---
