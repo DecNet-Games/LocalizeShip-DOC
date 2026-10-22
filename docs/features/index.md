@@ -36,6 +36,7 @@ Each page in this section covers one module: what it does, where it lives, how i
 | [**Release Gates**]({{ site.baseurl }}/docs/features/release-gates/) | Window + service | Four checks; HTML + JSON reports |
 | [**Release Comparison**]({{ site.baseurl }}/docs/features/release-comparison/) | Workflow | Compare exported reports; no diff window |
 | [**Advisory Drafts**]({{ site.baseurl }}/docs/features/advisory-drafts/) | Service | Validation guardrails; no outbound HTTP client |
+| [**Documentation Viewer**]({{ site.baseurl }}/docs/features/documentation-viewer/) | Window | Opens the ten bundled offline manuals |
 
 ---
 

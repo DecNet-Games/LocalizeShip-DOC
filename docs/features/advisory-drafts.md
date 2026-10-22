@@ -78,7 +78,7 @@ The validator expects:
 |---|---|---|
 | `id` | Yes, effectively | Must equal `source.EntryId.Value` exactly |
 | `suggestion` | Yes | Must be non-empty |
-| `rationale` | No | Defaults to `"Advisory AI Draft Proposal"` |
+| `rationale` | No | Falls back to the package's built-in advisory rationale label |
 
 Parsing uses `UnityEngine.JsonUtility.FromJson<AdvisoryResponseSchema>`. Unknown fields are ignored.
 
@@ -152,7 +152,7 @@ public DraftProposal RequestDraft(SourceRevision rev, LocaleId locale)
     string prompt =
         $"Translate entry '{rev.EntryId}' into {locale}.\n" +
         $"Source: {rev.SourceText}\n" +
-        $"Return JSON: {{\"id\":\"{rev.EntryId}\",\"suggestion\":\"...\",\"rationale\":\"...\"}}";
+        "Return JSON: {\"id\":\"" + rev.EntryId + "\",\"suggestion\":\"...\",\"rationale\":\"...\"}";
 
     string raw = MyHttpClient.PostJson(config, prompt); // your code
     return new AdvisoryProvider(config).ValidateSuggestion(rev, raw, locale);

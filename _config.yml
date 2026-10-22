@@ -21,7 +21,6 @@ search:
 
 # Header / Aux links
 aux_links:
-  "Unity Asset Store": "https://assetstore.unity.com/packages/slug/421016"
   "DecNet Games GitHub": "https://github.com/DecNet-Games"
 
 heading_anchors: true

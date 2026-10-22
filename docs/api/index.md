@@ -52,6 +52,12 @@ Everything under `Decnet.LocalizeShip.Core` is a normal public C# API. The edito
 | [Domain Services]({{ site.baseurl }}/docs/api/domain-services/) | Tracking, impact, merge, apply, text rules, visual rules |
 | [Capture Runner]({{ site.baseurl }}/docs/api/capture-runner-api/) | `CaptureFixture` and `CaptureRunner.ExecuteFixture` |
 | [Release Gate API]({{ site.baseurl }}/docs/api/release-gate-api/) | `ReleaseGateEvaluator`, policy, report generation |
+| [SourceRevision]({{ site.baseurl }}/docs/api/source-revision/) | Normalization, hashing, context and placeholder extraction |
+| [ImpactEngine]({{ site.baseurl }}/docs/api/impact-engine/) | Cascade computation and emitted impact categories |
+| [HandoffManifest]({{ site.baseurl }}/docs/api/handoff-manifest/) | Portable export schema and stable entry payloads |
+| [MergePlanner]({{ site.baseurl }}/docs/api/merge-planner/) | Three-way classifications and formula protection |
+| [TextRuleEngine]({{ site.baseurl }}/docs/api/text-rule-engine/) | Placeholder, rich-text and glossary validation |
+| [VisualRuleEngine]({{ site.baseurl }}/docs/api/visual-rule-engine/) | Geometry, glyph and suppression evaluation |
 
 ---
 

@@ -14,8 +14,6 @@ permalink: /docs/installation/
 
 LocalizeShip is a **commercial Unity Asset Store package**. It is not distributed for free on GitHub, and there is no public UPM registry endpoint for it. The GitHub repository you may have found is documentation and issue tracking only.
 
-[Open the Unity Asset Store listing](https://assetstore.unity.com/packages/slug/421016){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 }
-
 ![LocalizeShip runs on top of an existing provider]({{ site.baseurl }}/assets/images/15-existing-provider.png)
 
 ---

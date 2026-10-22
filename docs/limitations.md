@@ -102,7 +102,7 @@ A capture tile marked `Failed` is not counted as unvisited and may have no findi
 
 ---
 
-## AI and automation
+## Advisory drafting and automation
 
 - No HTTP client, prompt templates or model calls ship.
 - `AdvisoryProvider` validates a payload you already obtained.

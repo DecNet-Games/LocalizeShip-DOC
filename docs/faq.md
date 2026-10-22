@@ -26,7 +26,7 @@ No. It is a one-time paid Unity Asset Store package. There is no account, server
 
 No. The package has no HTTP client. Diagnostics are written locally. Handoff files leave only when you send them.
 
-### Does it need an AI service?
+### Does it need an external drafting service?
 
 No. The advisory module validates a JSON payload you supply. It does not call a model.
 
@@ -36,7 +36,7 @@ Verified on **Unity 6000.5.4f1** with Unity Localization **1.5.13** and Addressa
 
 ### How many tests pass?
 
-**12 of 12** EditMode acceptance tests. There are exactly 12 cases; any “13/13” figure is wrong.
+**12 of 12** EditMode acceptance tests pass on the verified Unity version.
 
 ### How does it decide a translation is stale?
 
@@ -104,7 +104,7 @@ Unity version, OS, graphics API, workspace counts and provider status. No string
 
 ### Where do I buy it and where do I report issues?
 
-Asset Store: <https://assetstore.unity.com/packages/slug/421016>
+Purchase LocalizeShip only through its Unity Asset Store product page. The documentation repository is not a product download.
 
 Issues: <https://github.com/DecNet-Games/LocalizeShip-DOC/issues>
 
